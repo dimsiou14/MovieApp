@@ -1,7 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialStateMovies = {
-    movieList:[]
+    movieList:[],
+    favorites:[]
 }
 
 const moviesSlice = createSlice({
@@ -13,10 +14,16 @@ const moviesSlice = createSlice({
         },
         resetMovies(state) {
             state.movieList = initialStateMovies.movieList
+        },
+        addToFavorites(state, action) {
+            state.favorites.push(action.payload)
+        },
+        removeFromFavorites(state, action) {
+            state.favorites.filter(item => item === action.payload)
         }
     }
 })
 
-export const MovieActions = moviesSlice.MovieActions
+export const MovieActions = moviesSlice.actions
 
 export default moviesSlice

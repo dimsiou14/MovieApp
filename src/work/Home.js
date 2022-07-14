@@ -1,10 +1,14 @@
-import React, { useState }  from 'react';
-import {Button, Card, CardBody, CardFooter, CardHeader, CardTitle, Label, Modal, ModalBody, ModalFooter, Row} from 'reactstrap'
+import React, { useEffect }  from 'react';
+import { Link } from 'react-router-dom';
+import {Card, CardBody, CardTitle, Col, Label, Navbar, Row} from 'reactstrap'
+import { MovieActions } from './reduxWork/movies';
+import { useSelector, useDispatch } from 'react-redux';
 
 const Home = () => {
 
-    const [Profile, setProfile] = useState({})
-    const [OpenModal, setOpenModal] = useState(false)
+    const dispatch = useDispatch()
+    const movies =  useSelector((state) => (state.movies.movieList))
+    const favoritesMovies = useSelector(state => state.movies.favorites)
 
     const data = [
         {
@@ -80,76 +84,69 @@ const Home = () => {
 
     ]
 
-    const ClickHandler = (movie) => {
-        setOpenModal(true)
-        setProfile(movie)
-    }
+    useEffect(() => {
+        dispatch(MovieActions.setMovies(data))
+        dispatch(MovieActions.addToFavorites(data))
+    }, [])
     
     return (
     <div className="d-flex justify-content-between" style={{height:'100vh', width:'100vw'}}>
-        <div className='nav d-flex justify-content-between' >
+        <Navbar className='nav d-flex justify-content-between' >
             <Row style={{background:'orange', marginTop:'2vh'}}>
                 
-                    <span>Home</span>
-               
-                    <span>Movies</span>
-                
-                    <span>Favorites</span>
-               
+                    <Col>
+                    <Link to={"/"}> Home </Link>
+                    </Col>
+
+                    <Col>
+                    <Link to={"/movies"}> Movies </Link>
+                    </Col>
+
+                    <Col>
+                    <Link to={"/favorites"}> Favorites </Link>
+                    </Col>
+
             </Row>
-        </div>
+        </Navbar>
         <Card style={{marginTop:'10vh', height:'50vh', width:'100vw'}}>
-            <CardHeader>
-                <CardTitle tag="h4" style={{alignSelf:'center'}}>Movies</CardTitle>
-            </CardHeader>
             <CardBody style={{overflowY:'scroll'}}>
+            <CardTitle tag="h4" style={{alignSelf:'start'}}>Movies</CardTitle>
                 <ul>
-                {data.map((movie) => {
+                {movies.map((movie) => {
                     return (
-                        <li onClick={() => {
-                            ClickHandler(movie)
-                        }}>
-                    <Row key={movie.id}>
-                        <Label>{movie.title}</Label>
-                        <br/>
-                        <Label>{movie.rate}</Label>
-                        <br/>
-                        <p>{movie.summary}</p>
-                        <hr/>
-                    </Row>
-                    </li>
+                        <li>
+                        <Row key={movie.id}>
+                            <Label>{movie.title}</Label>
+                            <br/>
+                            <Label>{movie.rate}</Label>
+                            <br/>
+                            <p>{movie.summary}</p>
+                            <hr/>
+                        </Row>
+                        </li>
+                    )
+                })}
+                </ul>
+                <CardTitle tag="h4" style={{alignSelf:'start'}}>Favorites</CardTitle>
+                <ul>
+                {favoritesMovies.map((favoritesMovie) => {
+                    return (
+                        <li>
+                        <Row key={favoritesMovie.id}>
+                            <Label>{favoritesMovie.title}</Label>
+                            <br/>
+                            <Label>{favoritesMovie.rate}</Label>
+                            <br/>
+                            <p>{favoritesMovie.summary}</p>
+                            <hr/>
+                        </Row>
+                        </li>
                     )
                 })}
                 </ul>
             </CardBody>
-            <CardFooter>
-                <Button>Save</Button>
-            </CardFooter>
-        
         </Card> 
-        <Modal isOpen={OpenModal} scrollable centered size='lg' backdrop onDrop={() => {
-            setOpenModal(false)
-            setProfile({})
-        }}>
-            <ModalBody>
-            <Label>{Profile.title}</Label>
-            <br/>
-            <Label>{Profile.rate}</Label>
-            <br/>
-            <p>{Profile.summary}</p>
-            </ModalBody>
-            <ModalFooter>
-                <Button 
-                onClick={() => {
-                    setOpenModal(false)
-                    setProfile({})
-                }}
-                >
-                    Close
-                </Button>
-            </ModalFooter>
-
-        </Modal>
+        
     </div>
     )
 }
