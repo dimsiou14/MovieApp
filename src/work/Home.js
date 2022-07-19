@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {Card, CardBody, CardTitle, Col, Label, Navbar, Row} from 'reactstrap'
 import { MovieActions } from './reduxWork/movies';
 import { useSelector, useDispatch } from 'react-redux';
+import toast  from 'react-hot-toast';
 
 const Home = () => {
 
@@ -10,140 +11,134 @@ const Home = () => {
     const movies =  useSelector((state) => (state.movies.movieList))
     const favoritesMovies = useSelector(state => state.movies.favorites)
 
-    const data = [
-        {
-            id:1,
-            title:"Tsitsi",
-            duration:"2hrs",
-            rate:10,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:2,
-            title:"Ele",
-            duration:"2hrs",
-            rate:10,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:3,
-            title:"Dim",
-            duration:"2hrs",
-            rate:7,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:4,
-            title:"Kostas",
-            duration:"2hrs",
-            rate:6,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:5,
-            title:"Diana",
-            duration:"2hrs",
-            rate:10,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:6,
-            title:"dadada",
-            duration:"2hrs",
-            rate:6,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:7,
-            title:"Tsigqrwgqwgqrwgtsi",
-            duration:"3hrs",
-            rate:9.5,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:8,
-            title:"Tsdadfadfitsi",
-            duration:"2hrs",
-            rate:6,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:9,
-            title:"grwgherTsitsi",
-            duration:"4hrs",
-            rate:3,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-        {
-            id:10,
-            title:"nvjvjv",
-            duration:"3hrs",
-            rate:5,
-            summary:"gbaksbgalkgbq;iwurbgliuwarbgaghwrahhwarilghiulwrAGHFHVLIAWHEVGHAWELIGHAILWHGIULAWHGLAIWUHGL"
-        },
-
-    ]
-
     useEffect(() => {
-        dispatch(MovieActions.setMovies(data))
-        dispatch(MovieActions.addToFavorites(data))
+        const toastFetchingMovies =  toast.loading("Fetching Movies...")
+        Promise.all([fetch(`https://imdb-api.com/en/API/Top250Movies/k_6y8bwi5t`)]).then((res) => {
+            if (res[0].ok) {
+                return Promise.all([res[0].json()])
+            }
+            throw new Error("Something unexpected happened..!")
+        }).then((res) => {
+            const responseMoviesFromApi = res[0].items
+            console.log(responseMoviesFromApi)
+            const TwentyMovies = []
+            for (let i = 0; i < 20; i++) {
+                
+                TwentyMovies.push(responseMoviesFromApi[i])
+            }
+            dispatch(MovieActions.setMovies(TwentyMovies))
+            toast.dismiss(toastFetchingMovies)
+            toast.success("Movies have been loaded succefully !")
+        }).catch(() => {
+            toast.dismiss(toastFetchingMovies)
+            toast.error("Failed to load the movies from api !")
+        })
+        
     }, [])
     
     return (
     <div className="d-flex justify-content-between" style={{height:'100vh', width:'100vw'}}>
-        <Navbar className='nav d-flex justify-content-between' >
-            <Row style={{background:'orange', marginTop:'2vh'}}>
+          <Navbar className='nav d-flex justify-content-between'>
+            <Row style={{background:'orange', marginTop:'2vh', borderRadius:'5rem', width:'50vw', marginLeft:'25vw'}}>
                 
-                    <Col>
-                    <Link to={"/"}> Home </Link>
-                    </Col>
+                <Link 
+                to={"/"} 
+                style={{color:'black', textDecoration:'none'}} 
+                onMouseOver={() => {
+                    document.getElementById("linkHome").style.color = 'blue'
+                }}
+                onMouseLeave={() => {
+                    document.getElementById("linkHome").style.color = 'black'
+                }} 
+                id="linkHome">
+                Home 
+                </Link>
+                     
+                <Link 
+                to={"/movies"} 
+                style={{color:'black', marginLeft:'1vw', textDecoration:'none'}} 
+                id="linkMovies"
+                 onMouseOver={() => {
+                    document.getElementById("linkMovies").style.color = 'blue'
+                }}
+                onMouseLeave={() => {
+                    document.getElementById("linkMovies").style.color = 'black'
+                }}> 
+                Movies
 
-                    <Col>
-                    <Link to={"/movies"}> Movies </Link>
-                    </Col>
-
-                    <Col>
-                    <Link to={"/favorites"}> Favorites </Link>
-                    </Col>
-
+                </Link>
+                   
+                <Link 
+                to={"/favorites"} 
+                style={{color:'black', marginLeft:'1vw', textDecoration:'none'}} 
+                id="linkFavorites"
+                 onMouseOver={() => {
+                    document.getElementById("linkFavorites").style.color = 'blue'
+                }}
+                onMouseLeave={() => {
+                    document.getElementById("linkFavorites").style.color = 'black'
+                }}>
+                Favorites
+                
+                </Link>
+        
             </Row>
         </Navbar>
         <Card style={{marginTop:'10vh', height:'50vh', width:'100vw'}}>
-            <CardBody style={{overflowY:'scroll'}}>
+            <CardBody >
             <CardTitle tag="h4" style={{alignSelf:'start'}}>Movies</CardTitle>
-                <ul>
+                {movies.length ? <ol>
                 {movies.map((movie) => {
                     return (
-                        <li>
-                        <Row key={movie.id}>
-                            <Label>{movie.title}</Label>
+                        <li  key={movie.id}>
+                        <Row>
+                            <Col style={{textAlign:'start'}}>
+                                <img src={movie.image} alt={`imageOfMovie${movie.id}`} width="25px" height="25px"/>
+                                <Label>{movie.title}</Label>
+                            </Col>
+                            <Col style={{textAlign:'start'}}>
+                            <Label>Year : {movie.year}</Label>
                             <br/>
-                            <Label>{movie.rate}</Label>
+                            <Label>Rank : {movie.rank}</Label>
+                            </Col>
+                            <Col style={{textAlign:'start'}}>
+                            <Label>Rating : {movie.imDbRating}</Label>
                             <br/>
-                            <p>{movie.summary}</p>
-                            <hr/>
+                            <Label>Reviews No : {movie.imDbRatingCount}</Label>
+                            </Col>
                         </Row>
+                        <hr/>
                         </li>
                     )
                 })}
-                </ul>
+                </ol> : <div>No Movies Found</div>}
                 <CardTitle tag="h4" style={{alignSelf:'start'}}>Favorites</CardTitle>
-                <ul>
+
+                {favoritesMovies.length ? <ol>
                 {favoritesMovies.map((favoritesMovie) => {
                     return (
-                        <li>
-                        <Row key={favoritesMovie.id}>
-                            <Label>{favoritesMovie.title}</Label>
+                        <li  key={favoritesMovie.id}>
+                        <Row>
+                            <Col style={{textAlign:'start'}}>
+                                <img src={favoritesMovie.image} alt={`imageOfMovie${favoritesMovie.id}`} width="25px" height="25px"/>
+                                <Label>{favoritesMovie.title}</Label>
+                            </Col>
+                            <Col style={{textAlign:'start'}}>
+                            <Label>Year : {favoritesMovie.year}</Label>
                             <br/>
-                            <Label>{favoritesMovie.rate}</Label>
+                            <Label>Rank : {favoritesMovie.rank}</Label>
+                            </Col>
+                            <Col style={{textAlign:'start'}}>
+                            <Label>Rating : {favoritesMovie.imDbRating}</Label>
                             <br/>
-                            <p>{favoritesMovie.summary}</p>
-                            <hr/>
+                            <Label>Reviews No : {favoritesMovie.imDbRatingCount}</Label>
+                            </Col>
                         </Row>
+                        <hr/>
                         </li>
                     )
                 })}
-                </ul>
+                </ol> : <div>No Favorites Movies Found</div>}
             </CardBody>
         </Card> 
         

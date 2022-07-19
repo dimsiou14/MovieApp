@@ -8,9 +8,19 @@ const MovieRouter = () => {
     
     const routes = useRoutes([
 
-        { path: "/",  element: <Home />, index:true},
-        { path: "/movies",  element: <Movies />},
-        { path: "/favorites",  element: <Favorites />}
+        { 
+            path: "/",  
+            element: <Home />, 
+            index:true
+        },
+        {
+            path: "/movies",  
+            element: <Movies />
+            },
+        { 
+            path: "/favorites",  
+            element: <Favorites />
+        }
 
     ])
 
