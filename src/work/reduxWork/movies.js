@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialStateMovies = {
     movieList:[],
-    favorites:[]
+    favorites:[],
+    profile:{}
 }
 
 const moviesSlice = createSlice({
@@ -21,6 +22,12 @@ const moviesSlice = createSlice({
         removeFromFavorites(state, action) {
             state.favorites = state.favorites.filter((item) => item.id !== (action.payload).id)
            
+        },
+        setMovieProfile(state, action) {
+            state.profile = action.payload
+        },
+        resetMovieProfile(state) {
+            state.profile = initialStateMovies.profile
         }
     }
 })
