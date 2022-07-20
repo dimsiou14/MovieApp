@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 import {Card, CardBody, CardTitle, Col, Label, Navbar, Row} from 'reactstrap'
 import { MovieActions } from './reduxWork/movies';
 import { useSelector, useDispatch } from 'react-redux';
-// import toast  from 'react-hot-toast';
+import toast  from 'react-hot-toast';
 
 const Home = () => {
 
     const dispatch = useDispatch()
-    const movies =  useSelector((state) => (state.movies.movieList))
-    const favoritesMovies = useSelector(state => state.movies.favorites)
+    const movies =  useSelector((state) => (state.movies.top10movies))
+    const favoritesMovies = useSelector(state => state.movies.top10favorites)
 
     useEffect(() => {
-        /*
+
         const toastFetchingMovies =  toast.loading("Fetching Movies...")
         Promise.all([fetch(`https://imdb-api.com/en/API/Top250Movies/k_6y8bwi5t`)]).then((res) => {
             if (res[0].ok) {
@@ -33,7 +33,7 @@ const Home = () => {
         }).catch(() => {
             toast.dismiss(toastFetchingMovies)
             toast.error("Failed to load the movies from api !")
-        })*/
+        })
 
         const data = [
             {
@@ -258,8 +258,8 @@ const Home = () => {
     }, [])
     
     return (
-    <div style={{height:'100vh', width:'100vw'}}>
-                    <Navbar className='nav d-flex justify-content-between' style={{background:'orange', marginTop:'2vh', borderRadius:'5rem', width:'50vw', marginLeft:'25vw'}}>
+    <div style={{height:'97vh', width:'97vw'}}>
+                    <Navbar className='nav d-flex justify-content-between' style={{background:'darkcyan', marginTop:'2vh', borderRadius:'5rem', width:'50vw', marginLeft:'25vw'}}>
             <Col>
                 <Link 
                 to={"/"} 
@@ -309,59 +309,37 @@ const Home = () => {
         </Navbar>
         <Card style={{marginTop:'10vh', width:'90vw', marginLeft:'5vw'}}>
             <CardBody >
-            <CardTitle tag="h4" style={{alignSelf:'start'}}>Movies</CardTitle>
-                {movies.length ? <ol>
+            <CardTitle tag="h4" >Top 10 Movies</CardTitle>
+                {movies.length ? <div className='container-fluid' style={{marginTop:'5vh'}}>
+                <Row sm={3} md={4} lg={5}>
                 {movies.map((movie) => {
                     return (
-                        <li  key={movie.id}>
-                        <Row>
-                            <Col style={{textAlign:'start'}}>
-                                <img src={movie.image} alt={`imageOfMovie${movie.id}`} width="25px" height="25px"/>
-                                <Label>{movie.title}</Label>
-                            </Col>
-                            <Col style={{textAlign:'start'}}>
-                            <Label>Year : {movie.year}</Label>
-                            <br/>
-                            <Label>Rank : {movie.rank}</Label>
-                            </Col>
-                            <Col style={{textAlign:'start'}}>
-                            <Label>Rating : {movie.imDbRating}</Label>
-                            <br/>
-                            <Label>Reviews No : {movie.imDbRatingCount}</Label>
-                            </Col>
-                        </Row>
-                        <hr/>
-                        </li>
+                        <div key={movie.id}>
+                        <Col sm={5}>
+                        <img src={movie.image} alt={movie.id} />
+                        <span>{movie.title}</span>
+                        </Col>
+                        </div>
                     )
                 })}
-                </ol> : <div>No Movies Found</div>}
-                <CardTitle tag="h4" style={{alignSelf:'start'}}>Favorites</CardTitle>
+                </Row>
+                </div> : <div>No Movies Found</div>}
+                <CardTitle tag="h4">Top 10 Favorites</CardTitle>
 
-                {favoritesMovies.length ? <ol>
+                {favoritesMovies.length ? <div className='container-fluid' style={{marginTop:'5vh'}}>
+                <Row sm={3} md={4} lg={5}>
                 {favoritesMovies.map((favoritesMovie) => {
-                    return (
-                        <li  key={favoritesMovie.id}>
-                        <Row>
-                            <Col style={{textAlign:'start'}}>
-                                <img src={favoritesMovie.image} alt={`imageOfMovie${favoritesMovie.id}`} width="25px" height="25px"/>
-                                <Label>{favoritesMovie.title}</Label>
-                            </Col>
-                            <Col style={{textAlign:'start'}}>
-                            <Label>Year : {favoritesMovie.year}</Label>
-                            <br/>
-                            <Label>Rank : {favoritesMovie.rank}</Label>
-                            </Col>
-                            <Col style={{textAlign:'start'}}>
-                            <Label>Rating : {favoritesMovie.imDbRating}</Label>
-                            <br/>
-                            <Label>Reviews No : {favoritesMovie.imDbRatingCount}</Label>
-                            </Col>
-                        </Row>
-                        <hr/>
-                        </li>
+                     return (
+                        <div key={favoritesMovie.id}>
+                        <Col sm={5}>
+                        <img src={favoritesMovie.image} alt={favoritesMovie.id} />
+                        <span>{favoritesMovie.title}</span>
+                        </Col>
+                        </div>
                     )
                 })}
-                </ol> : <div>No Favorites Movies Found</div>}
+                </Row>
+                </div> : <div>No Favorites Movies Found</div>}
             </CardBody>
         </Card> 
         

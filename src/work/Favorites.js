@@ -4,6 +4,7 @@ import {MovieActions} from './reduxWork/movies';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Datatabe from 'react-data-table-component';
+import { Heart, Star } from 'react-feather';
 
 const Favorites = () => {
 
@@ -75,23 +76,30 @@ const Favorites = () => {
                 )
             },
             sortable:true,
-            sortFunction:TitleSortFunction,
-            wrap:false
+            sortFunction:TitleSortFunction
         },
         {
             name:'ImDbRating',
-            cell:(row) => row.imDbRating,
+            cell:(row) => {
+                return (
+                    <div>
+                        <span>{row.imDbRating}</span>
+                        <Star size={'1.1rem'} style={{marginLeft:'1vw'}}/>
+                    </div>
+                )
+            },
             sortable:true,
             sortFunction:RatingSortFunction
         },
         {
             name:'Actions',
             cell:(row) => {
+
                 return (
                     <div>
-                        <Button onClick={() => {
+                        <Heart fill size='1.1rem'  onClick={() => {
                             dispatch(MovieActions.removeFromFavorites(row))
-                        }}>Remove From Favorites</Button>
+                        }}/>
                     </div>
                 )
             }
@@ -189,10 +197,10 @@ const Favorites = () => {
            style={{color:'white', marginLeft:'1vw', textDecoration:'none'}} 
            id="linkMovies"
             onMouseOver={() => {
-                document.getElementById("linkHome").style.color = 'lightgrey'
+                document.getElementById("linkMovies").style.color = 'lightgrey'
            }}
            onMouseLeave={() => {
-            document.getElementById("linkHome").style.color = 'white'
+            document.getElementById("linkMovies").style.color = 'white'
            }}> 
            Movies
 
@@ -204,10 +212,10 @@ const Favorites = () => {
            style={{color:'white', marginLeft:'1vw', textDecoration:'none'}} 
            id="linkFavorites"
             onMouseOver={() => {
-                document.getElementById("linkHome").style.color = 'lightgrey'
+                document.getElementById("linkFavorites").style.color = 'lightgrey'
            }}
            onMouseLeave={() => {
-            document.getElementById("linkHome").style.color = 'white'
+            document.getElementById("linkFavorites").style.color = 'white'
            }}>
            Favorites
            
@@ -216,8 +224,8 @@ const Favorites = () => {
   
    </Navbar>
       <Card style={{marginTop:'5vh', width:'90vw', marginLeft:'5vw'}}>
-       <CardHeader>
-       {favoritesMovies.length && 
+      {favoritesMovies.length ? <CardHeader>
+       
        <Row md={5} style={{marginTop:'1vh'}}>
            <Col style={{marginTop:'1vh', fontWeight:'bold'}}><CardTitle>Favorites</CardTitle></Col>
            <Col></Col>
@@ -230,13 +238,14 @@ const Favorites = () => {
            value={searchBar}
            onChange={SearchBarHandler}/>
         </Col>
-       </Row>}
-       </CardHeader>
+       </Row> 
+       </CardHeader> :null}
       <CardBody>
       
       <Datatabe
       data={dataToRender()}
       columns={columnsFavorites}
+      pointerOnHover
       paginationPerPage={7}
       paginationRowsPerPageOptions={[1,3,7]}
       responsive
@@ -264,7 +273,7 @@ const Favorites = () => {
                         <hr/>
                         <Label><span style={{fontWeight:'bold'}}>  Rank : </span>{profile.rank}</Label>
                         <hr/>
-                        <Label><span style={{fontWeight:'bold'}}>  Rating : </span>{profile.imDbRating}</Label>
+                        <Label><span style={{fontWeight:'bold'}}>  Rating : </span>{profile.imDbRating} <Star size={'1.1rem'} /></Label>
                         <hr/>
                         <Label><span style={{fontWeight:'bold'}}>  Reviews No : </span>{profile.imDbRatingCount}</Label>
                         <hr/>

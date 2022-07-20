@@ -4,9 +4,10 @@ import {MovieActions} from './reduxWork/movies';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Datatabe from 'react-data-table-component';
+import {Heart, Star} from 'react-feather'
 
 const Movies = () => {
-
+    const favorites = useSelector(state => state.movies.favorites)
     const movies =  useSelector(state => state.movies.movieList)
     const profile = useSelector(state => state.movies.profile)
     const [showModal, setShowModal] = useState(false)
@@ -75,23 +76,31 @@ const Movies = () => {
                 )
             },
             sortable:true,
-            sortFunction:TitleSortFunction,
-            wrap:false
+            sortFunction:TitleSortFunction
         },
         {
             name:'ImDbRating',
-            cell:(row) => row.imDbRating,
+            cell:(row) => {
+                return (
+                    <div>
+                        <span>{row.imDbRating}</span>
+                        <Star size={'1.1rem'} style={{marginLeft:'1vw'}}/>
+                    </div>
+                )
+            },
             sortable:true,
             sortFunction:RatingSortFunction
         },
         {
             name:'Actions',
             cell:(row) => {
+                const index = favorites.findIndex((item => item.id === row.id))
+
                 return (
                     <div>
-                        <Button onClick={() => {
+                        {index === -1 ? <Heart size='1.1rem' onClick={() => {
                             dispatch(MovieActions.addToFavorites(row))
-                        }}>Add To Favorites</Button>
+                        }}/> : null}
                     </div>
                 )
             }
@@ -216,8 +225,7 @@ const Movies = () => {
        
         </Navbar>
            <Card style={{marginTop:'5vh', width:'90vw', marginLeft:'5vw'}}>
-            <CardHeader>
-            {movies.length && 
+           {movies.length  ? <CardHeader>
             <Row md={5} style={{marginTop:'1vh'}}>
                  <Col style={{marginTop:'1vh', fontWeight:'bold'}}><CardTitle>Movies</CardTitle></Col>
                 <Col></Col>
@@ -230,8 +238,8 @@ const Movies = () => {
                 value={searchBar}
                 onChange={SearchBarHandler}/>
              </Col>
-            </Row>}
-            </CardHeader>
+            </Row>
+            </CardHeader> : null}
            <CardBody>
            
            <Datatabe
@@ -265,7 +273,7 @@ const Movies = () => {
                         <hr/>
                         <Label><span style={{fontWeight:'bold'}}>  Rank : </span>{profile.rank}</Label>
                         <hr/>
-                        <Label><span style={{fontWeight:'bold'}}>  Rating : </span>{profile.imDbRating}</Label>
+                        <Label><span style={{fontWeight:'bold'}}>  Rating : </span>{profile.imDbRating} <Star size={'1.1rem'} /></Label>
                         <hr/>
                         <Label><span style={{fontWeight:'bold'}}>  Reviews No : </span>{profile.imDbRatingCount}</Label>
                         <hr/>
