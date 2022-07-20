@@ -1,5 +1,5 @@
 import React, { useState }  from 'react';
-import { Card, Button, Label, Col, Row, Navbar, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Card, Button, Label, Col, Row, Navbar, Modal, ModalHeader, ModalBody, ModalFooter, Input, CardHeader, CardBody, CardTitle } from 'reactstrap';
 import {MovieActions} from './reduxWork/movies';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -68,20 +68,15 @@ const Movies = () => {
             name:'Title',
             cell:(row) => {
                 return (
-                    <div>
-                        <Row>
-                            <Col>
-                            <img src={row.image} alt={`movie-${row.id}`} width="20px" height="20px"/>
-                            </Col>
-                            <Col>
-                            <span style={{marginLeft:'2vw'}}>{row.title}</span>
-                            </Col>
-                        </Row>
+                    <div style={{textAlign:'start'}}>
+                        <img src={row.image} alt={`movie-${row.id}`} width="20px" height="20px"/>
+                        <span style={{marginLeft:'0.5vw'}}>{row.title}</span>
                     </div>
                 )
             },
             sortable:true,
-            sortFunction:TitleSortFunction
+            sortFunction:TitleSortFunction,
+            wrap:false
         },
         {
             name:'ImDbRating',
@@ -141,7 +136,8 @@ const Movies = () => {
         const Value = e.target.value
         let updatedData
 
-        updatedData = movies.map((item) => {
+        updatedData = movies.filter((item) => {
+           
             const startsWith = item.title.toLowerCase().startsWith(Value.toString().toLowerCase()) ||
             item.rank.toString().toLowerCase().startsWith(Value.toString().toLowerCase()) ||
             item.imDbRating.toString().toLowerCase().startsWith(Value.toString().toLowerCase())
@@ -151,11 +147,9 @@ const Movies = () => {
             item.imDbRating.toString().toLowerCase().includes(Value.toString().toLowerCase())
 
             if (includes) {
-                return includes
+                return item
             } else if (startsWith) {
-                return (startsWith)
-            } else {
-                return null
+                return item
             }
         })
 
@@ -164,7 +158,7 @@ const Movies = () => {
     }
 
     const dataToRender = () => {
-        if (searchBar.length) {
+        if (searchBar !== "") {
             return filteredData
         } else {
             return movies
@@ -172,7 +166,7 @@ const Movies = () => {
     }
 
     return (
-        <div style={{width:'100vw', height:'100vh'}}>
+        <div style={{width:'97vw', height:'97vh'}}>
              <Navbar className='nav d-flex justify-content-between' style={{background:'orange', marginTop:'2vh', borderRadius:'5rem', width:'50vw', marginLeft:'25vw'}}>
             <Col>
                 <Link 
@@ -221,21 +215,34 @@ const Movies = () => {
                 </Col>
        
         </Navbar>
-           <Card style={{marginTop:'10vh', width:'90vw', marginLeft:'5vw'}}>
-            {movies.length && <div>
-             SearchBar :   
-            <Input
-             type='text' 
-             value={searchBar}
-             onChange={SearchBarHandler}/>
-           </div>}
+           <Card style={{marginTop:'5vh', width:'90vw', marginLeft:'5vw'}}>
+            <CardHeader>
+            {movies.length && 
+            <Row md={5} style={{marginTop:'1vh'}}>
+                 <Col style={{marginTop:'1vh', fontWeight:'bold'}}><CardTitle>Movies</CardTitle></Col>
+                <Col></Col>
+                <Col></Col>
+                <Col style={{marginTop:'1vh'}}>SearchBar :</Col>
+                <Col>
+                <Input
+                id='searchbar'
+                type='text' 
+                value={searchBar}
+                onChange={SearchBarHandler}/>
+             </Col>
+            </Row>}
+            </CardHeader>
+           <CardBody>
            
            <Datatabe
            data={dataToRender()}
            columns={columnsMovies}
            responsive
+           pointerOnHover
            striped
            pagination
+           paginationPerPage={7}
+           paginationRowsPerPageOptions={[1,3,7]}
            highlightOnHover
            onRowClicked={(row) => {
             setShowModal(true)
@@ -243,15 +250,29 @@ const Movies = () => {
            }}
            customStyles={TableStyle}
            />
-            </Card>
+           </CardBody>
+            </Card>:
             <Modal isOpen={showModal} toggle={toggleModal} centered backdrop size="lg" autoFocus scrollable> 
                 <ModalHeader>
                     <Label>{profile.fullTitle}</Label>
                 </ModalHeader>
                 <ModalBody>
-                    <Label>{profile.title}</Label>
-                    <Label>{profile.crew}</Label>
-                    <Label>{profile.rank}</Label>
+                  <Row md={2}>
+                    <img src={profile.image} alt={profile.id} />
+                    <Col>
+                        
+                        <Label><span style={{fontWeight:'bold'}}> Year : </span>{profile.year}</Label>
+                        <hr/>
+                        <Label><span style={{fontWeight:'bold'}}>  Rank : </span>{profile.rank}</Label>
+                        <hr/>
+                        <Label><span style={{fontWeight:'bold'}}>  Rating : </span>{profile.imDbRating}</Label>
+                        <hr/>
+                        <Label><span style={{fontWeight:'bold'}}>  Reviews No : </span>{profile.imDbRatingCount}</Label>
+                        <hr/>
+                        <Label><span style={{fontWeight:'bold'}}>  Cast : </span>{profile.crew}</Label>
+                        </Col>
+                 
+                  </Row>
                 </ModalBody>
                 <ModalFooter>
                     <Button 
